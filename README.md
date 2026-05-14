@@ -3,12 +3,29 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-zero-orange.svg)]()
+[![Built with WorkBuddy](https://img.shields.io/badge/Built%20with-WorkBuddy-635BFF.svg)](https://github.com/cdryzun/ai-api-docs-portal)
 
 A Stripe-inspired, production-grade API documentation portal built as a single self-contained HTML file. Zero external dependencies, zero build steps.
 
-**Repository**: [github.com/cdryzun/ai-api-docs-portal](https://github.com/cdryzun/ai-api-docs-portal)
+> 🤖 本项目由 [WorkBuddy](https://workbuddy.ai) AI 搭档协作完成，从页面设计、代码生成到文档编写与部署，全程人机协作。
 
-**Live Demo**: Deploy to Netlify or open `index.html` directly in a browser.
+**仓库**: [github.com/cdryzun/ai-api-docs-portal](https://github.com/cdryzun/ai-api-docs-portal)
+
+**在线预览**: [www.treesir.pub/ai-api-docs-portal/](http://www.treesir.pub/ai-api-docs-portal/)
+
+---
+
+## 简介
+
+这是一个面向 AI 服务的 API 文档门户页面，采用 Stripe 官方文档的设计风格，以单文件 HTML 实现，无需任何构建工具或外部依赖。
+
+核心特点：
+
+- **三栏布局** — 左侧可折叠导航菜单、中间文档内容区、右侧代码示例区
+- **深色/浅色主题** — 默认深色，一键切换，选择自动持久化
+- **多语言代码示例** — 支持 Python / JavaScript / cURL Tab 切换，内置语法高亮与一键复制
+- **响应式设计** — 小屏自动适配，代码区折叠到内容下方
+- **零依赖** — 所有 CSS 和 JS 内联，不依赖任何 CDN 或外部资源
 
 ---
 
@@ -26,24 +43,25 @@ A Stripe-inspired, production-grade API documentation portal built as a single s
 
 ---
 
-## Project Structure
+## Project Structure / 项目结构
 
 ```
 ai-api-docs-portal/
-├── index.html        # Complete single-page documentation portal
-├── netlify.toml      # Netlify deployment config & security headers
-├── README.md         # This file
-├── CONTRIBUTING.md   # Contribution guidelines
-├── CHANGELOG.md      # Version history
-├── LICENSE           # MIT License
-└── .gitignore        # Git ignore rules
+├── index.html                    # 完整的单页面文档门户
+├── netlify.toml                  # Netlify 部署配置 & 安全响应头
+├── .github/workflows/deploy.yml  # GitHub Pages 自动部署工作流
+├── README.md                     # 本文件
+├── CONTRIBUTING.md               # 贡献指南
+├── CHANGELOG.md                  # 版本更新日志
+├── LICENSE                       # MIT 开源协议
+└── .gitignore                    # Git 忽略规则
 ```
 
 ---
 
-## Quick Start
+## Quick Start / 快速开始
 
-### Local Preview
+### Local Preview / 本地预览
 
 No build step required — just open the file:
 
@@ -59,7 +77,7 @@ python3 -m http.server 8080
 # Then visit http://localhost:8080
 ```
 
-### Deploy to Netlify
+### Deploy to Netlify / 部署到 Netlify
 
 1. Fork or clone this repo
 2. Log in to [Netlify](https://app.netlify.com/)
@@ -70,7 +88,7 @@ python3 -m http.server 8080
 
 Or use Netlify Drop for instant deployment: drag & drop the project folder at [app.netlify.com/drop](https://app.netlify.com/drop).
 
-### Deploy to GitHub Pages
+### Deploy to GitHub Pages / 部署到 GitHub Pages
 
 1. Go to **Settings → Pages** in your GitHub repo
 2. Set source to `main` branch, root directory
@@ -78,7 +96,7 @@ Or use Netlify Drop for instant deployment: drag & drop the project folder at [a
 
 ---
 
-## Architecture
+## Architecture / 技术架构
 
 ### Design System
 
@@ -123,7 +141,7 @@ Persistence: `localStorage.setItem('docs-theme', 'dark'|'light')`
 
 ---
 
-## Customization
+## Customization / 自定义
 
 ### Change Accent Color
 
@@ -155,7 +173,7 @@ Edit the CSS custom property in `:root`:
 
 ---
 
-## Documentation Sections
+## Documentation Sections / 文档章节
 
 The portal includes five major sections:
 
@@ -169,7 +187,7 @@ Each section contains parameter tables with type annotations, required markers, 
 
 ---
 
-## Browser Support
+## Browser Support / 浏览器兼容
 
 - Chrome 80+
 - Firefox 78+
@@ -180,7 +198,7 @@ Uses standard CSS custom properties, `scroll-behavior: smooth`, `backdrop-filter
 
 ---
 
-## Security Headers
+## Security Headers / 安全响应头
 
 Configured in `netlify.toml`:
 
@@ -193,6 +211,12 @@ Configured in `netlify.toml`:
 
 ---
 
-## License
+## License / 开源协议
 
-[MIT](./LICENSE) — free to use, modify, and distribute.
+[MIT](./LICENSE) — 自由使用、修改和分发。
+
+---
+
+## Acknowledgements / 致谢
+
+本项目由 [WorkBuddy](https://workbuddy.ai) AI 搭档「小悟」协作完成。设计参考 [Stripe 官方文档](https://stripe.com/docs)风格，通过 [awesome-design-md](https://github.com/anthropics/awesome-design-md) 的 Stripe DESIGN.md 规范指导实现。
