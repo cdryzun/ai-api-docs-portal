@@ -1,6 +1,12 @@
 # AI API Documentation Portal
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
+[![Zero Dependencies](https://img.shields.io/badge/dependencies-zero-orange.svg)]()
+
 A Stripe-inspired, production-grade API documentation portal built as a single self-contained HTML file. Zero external dependencies, zero build steps.
+
+**Repository**: [github.com/cdryzun/ai-api-docs-portal](https://github.com/cdryzun/ai-api-docs-portal)
 
 **Live Demo**: Deploy to Netlify or open `index.html` directly in a browser.
 
@@ -121,7 +127,7 @@ Persistence: `localStorage.setItem('docs-theme', 'dark'|'light')`
 
 ### Change Accent Color
 
-Edit the CSS custom property in `:root` and `[data-theme="dark"]`:
+Edit the CSS custom property in `:root`:
 
 ```css
 :root {
@@ -131,6 +137,8 @@ Edit the CSS custom property in `:root` and `[data-theme="dark"]`:
   --accent-border: rgba(99, 91, 255, 0.25);
 }
 ```
+
+> **Note:** The accent color is defined only in `:root` and shared across both themes. If you want different accent colors for dark/light, add overrides in the `[data-theme="dark"]` or `[data-theme="light"]` block.
 
 ### Add API Endpoints
 
