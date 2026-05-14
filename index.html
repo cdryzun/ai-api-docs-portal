@@ -1,0 +1,2191 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI API Documentation</title>
+  <style>
+    /* ============================================
+       CSS VARIABLES & THEME SYSTEM
+       ============================================ */
+    :root {
+      /* Stripe-inspired purple accent */
+      --accent: #635BFF;
+      --accent-hover: #5249e0;
+      --accent-soft: rgba(99, 91, 255, 0.08);
+      --accent-border: rgba(99, 91, 255, 0.25);
+      --accent-glow: rgba(99, 91, 255, 0.15);
+
+      /* Light theme (default for data-theme="light") */
+      --bg-page: #ffffff;
+      --bg-surface: #fafbfc;
+      --bg-code: #f6f8fa;
+      --bg-code-header: #eef1f5;
+      --bg-nav: #ffffff;
+      --bg-hover: rgba(99, 91, 255, 0.04);
+      --bg-active: rgba(99, 91, 255, 0.08);
+      --bg-badge: #f1f3f7;
+      --bg-success: rgba(21, 190, 83, 0.08);
+      --bg-warn: rgba(155, 104, 41, 0.08);
+      --bg-error: rgba(234, 34, 97, 0.08);
+
+      --text-heading: #0a1628;
+      --text-body: #4a5568;
+      --text-muted: #8b95a5;
+      --text-code: #1a202c;
+      --text-link: #635BFF;
+      --text-nav: #4a5568;
+      --text-nav-active: #635BFF;
+
+      --border-default: #e2e8f0;
+      --border-subtle: #edf2f7;
+      --border-code: #e2e8f0;
+
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+      --shadow-lg: rgba(50, 50, 93, 0.1) 0px 13px 27px -5px, rgba(0, 0, 0, 0.07) 0px 8px 16px -8px;
+
+      --method-get: #2874ad;
+      --method-post: #15be53;
+      --method-delete: #ea2261;
+      --method-patch: #9b6829;
+
+      --success: #15be53;
+      --warn: #9b6829;
+      --error: #ea2261;
+
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 8px;
+
+      --header-height: 56px;
+      --nav-width: 260px;
+      --code-width: 420px;
+    }
+
+    [data-theme="dark"] {
+      --bg-page: #0a0e1a;
+      --bg-surface: #111827;
+      --bg-code: #0d1117;
+      --bg-code-header: #161b22;
+      --bg-nav: #111827;
+      --bg-hover: rgba(99, 91, 255, 0.06);
+      --bg-active: rgba(99, 91, 255, 0.1);
+      --bg-badge: #1f2937;
+      --bg-success: rgba(21, 190, 83, 0.1);
+      --bg-warn: rgba(155, 104, 41, 0.1);
+      --bg-error: rgba(234, 34, 97, 0.1);
+
+      --text-heading: #f1f5f9;
+      --text-body: #94a3b8;
+      --text-muted: #64748b;
+      --text-code: #e2e8f0;
+      --text-link: #8b85ff;
+      --text-nav: #94a3b8;
+      --text-nav-active: #8b85ff;
+
+      --border-default: #1e293b;
+      --border-subtle: #1e293b;
+      --border-code: #30363d;
+
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.15);
+      --shadow-lg: rgba(50, 50, 93, 0.2) 0px 13px 27px -5px, rgba(0, 0, 0, 0.2) 0px 8px 16px -8px;
+    }
+
+    /* ============================================
+       RESET & BASE
+       ============================================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-page);
+      color: var(--text-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: var(--text-link);
+      text-decoration: none;
+    }
+
+    code, pre {
+      font-family: var(--font-mono);
+    }
+
+    /* ============================================
+       HEADER
+       ============================================ */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--header-height);
+      background: var(--bg-page);
+      border-bottom: 1px solid var(--border-default);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      backdrop-filter: blur(12px);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-heading);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: var(--radius-sm);
+    }
+
+    .menu-toggle:hover {
+      background: var(--bg-hover);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--text-heading);
+      letter-spacing: -0.3px;
+    }
+
+    .logo-icon {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #635BFF, #8b5cf6);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .theme-toggle {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-default);
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--accent-border);
+      color: var(--text-heading);
+    }
+
+    .version-badge {
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--bg-badge);
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      font-family: var(--font-mono);
+    }
+
+    /* ============================================
+       LAYOUT
+       ============================================ */
+    .layout {
+      display: flex;
+      margin-top: var(--header-height);
+      min-height: calc(100vh - var(--header-height));
+    }
+
+    /* ============================================
+       SIDEBAR NAVIGATION
+       ============================================ */
+    .sidebar {
+      width: var(--nav-width);
+      background: var(--bg-nav);
+      border-right: 1px solid var(--border-default);
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      z-index: 100;
+      padding: 20px 0;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+      background: var(--border-default);
+      border-radius: 2px;
+    }
+
+    .nav-section {
+      margin-bottom: 4px;
+    }
+
+    .nav-section-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 8px 20px;
+      background: none;
+      border: none;
+      color: var(--text-heading);
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      text-align: left;
+    }
+
+    .nav-section-toggle:hover {
+      color: var(--accent);
+    }
+
+    .nav-section-toggle svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.2s ease;
+      color: var(--text-muted);
+    }
+
+    .nav-section.collapsed .nav-section-toggle svg {
+      transform: rotate(-90deg);
+    }
+
+    .nav-section.collapsed .nav-links {
+      display: none;
+    }
+
+    .nav-links {
+      list-style: none;
+      padding: 2px 0;
+    }
+
+    .nav-links a {
+      display: block;
+      padding: 6px 20px 6px 28px;
+      color: var(--text-nav);
+      font-size: 13.5px;
+      line-height: 1.5;
+      border-left: 2px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-heading);
+      background: var(--bg-hover);
+    }
+
+    .nav-links a.active {
+      color: var(--text-nav-active);
+      background: var(--bg-active);
+      border-left-color: var(--accent);
+      font-weight: 500;
+    }
+
+    /* ============================================
+       MAIN CONTENT
+       ============================================ */
+    .main {
+      flex: 1;
+      margin-left: var(--nav-width);
+      margin-right: var(--code-width);
+      min-width: 0;
+      padding: 40px 48px 80px;
+      max-width: 720px;
+    }
+
+    .section {
+      margin-bottom: 56px;
+      scroll-margin-top: calc(var(--header-height) + 24px);
+    }
+
+    .section-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-heading);
+      margin-bottom: 16px;
+      letter-spacing: -0.6px;
+      line-height: 1.2;
+    }
+
+    .section-desc {
+      font-size: 15px;
+      color: var(--text-body);
+      margin-bottom: 24px;
+      line-height: 1.7;
+    }
+
+    .section-desc p {
+      margin-bottom: 12px;
+    }
+
+    .section-desc p:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-desc code {
+      background: var(--bg-code);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 13px;
+      color: var(--text-code);
+      border: 1px solid var(--border-code);
+    }
+
+    .subsection {
+      margin-top: 40px;
+      margin-bottom: 32px;
+    }
+
+    .subsection-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-heading);
+      margin-bottom: 12px;
+      letter-spacing: -0.3px;
+    }
+
+    .subsection-desc {
+      font-size: 14.5px;
+      color: var(--text-body);
+      margin-bottom: 20px;
+      line-height: 1.65;
+    }
+
+    /* ============================================
+       API ENDPOINT HEADER
+       ============================================ */
+    .endpoint {
+      margin-bottom: 32px;
+      scroll-margin-top: calc(var(--header-height) + 24px);
+    }
+
+    .endpoint-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .method {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .method.get {
+      background: rgba(40, 116, 173, 0.12);
+      color: #60a5fa;
+    }
+
+    .method.post {
+      background: rgba(21, 190, 83, 0.12);
+      color: #4ade80;
+    }
+
+    .method.delete {
+      background: rgba(234, 34, 97, 0.12);
+      color: #f472b6;
+    }
+
+    .method.patch {
+      background: rgba(155, 104, 41, 0.12);
+      color: #fbbf24;
+    }
+
+    .path {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--text-heading);
+      font-weight: 500;
+      letter-spacing: -0.2px;
+    }
+
+    .endpoint-desc {
+      font-size: 14.5px;
+      color: var(--text-body);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    /* ============================================
+       PARAMETERS TABLE
+       ============================================ */
+    .params-table-wrap {
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+
+    .params-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      min-width: 500px;
+    }
+
+    .params-table th {
+      text-align: left;
+      padding: 10px 14px;
+      font-weight: 600;
+      color: var(--text-heading);
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-default);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .params-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: top;
+    }
+
+    .params-table tr:hover td {
+      background: var(--bg-hover);
+    }
+
+    .param-name {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-heading);
+      font-weight: 500;
+    }
+
+    .param-name .required {
+      color: var(--error);
+      font-size: 10px;
+      font-weight: 600;
+      margin-left: 4px;
+      text-transform: uppercase;
+    }
+
+    .param-type {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .param-desc {
+      color: var(--text-body);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .param-desc code {
+      background: var(--bg-code);
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-size: 12px;
+      color: var(--text-code);
+      border: 1px solid var(--border-code);
+    }
+
+    /* ============================================
+       RESPONSE BLOCK
+       ============================================ */
+    .response-block {
+      margin-top: 20px;
+    }
+
+    .response-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-heading);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 8px;
+    }
+
+    .response-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .status-dot.success {
+      background: var(--success);
+    }
+
+    .status-dot.error {
+      background: var(--error);
+    }
+
+    /* ============================================
+       CODE PANEL (RIGHT SIDEBAR)
+       ============================================ */
+    .code-panel {
+      width: var(--code-width);
+      background: var(--bg-code);
+      border-left: 1px solid var(--border-default);
+      position: fixed;
+      top: var(--header-height);
+      right: 0;
+      bottom: 0;
+      overflow-y: auto;
+      z-index: 100;
+      padding: 24px 0;
+    }
+
+    .code-panel::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .code-panel::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .code-panel::-webkit-scrollbar-thumb {
+      background: var(--border-default);
+      border-radius: 2px;
+    }
+
+    .code-block-wrapper {
+      margin: 0 20px 28px;
+    }
+
+    .code-block-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-code-header);
+      border: 1px solid var(--border-code);
+      border-bottom: none;
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
+      padding: 8px 12px;
+    }
+
+    .lang-tabs {
+      display: flex;
+      gap: 2px;
+    }
+
+    .lang-tab {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-family: var(--font-mono);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .lang-tab:hover {
+      color: var(--text-heading);
+      background: var(--bg-hover);
+    }
+
+    .lang-tab.active {
+      color: var(--text-heading);
+      background: var(--bg-code);
+      font-weight: 500;
+    }
+
+    .copy-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+
+    .copy-btn:hover {
+      color: var(--text-heading);
+      background: var(--bg-hover);
+    }
+
+    .copy-btn.copied {
+      color: var(--success);
+    }
+
+    .code-block {
+      background: var(--bg-code);
+      border: 1px solid var(--border-code);
+      border-radius: 0 0 var(--radius-md) var(--radius-md);
+      padding: 14px 16px;
+      overflow-x: auto;
+      font-size: 12.5px;
+      line-height: 1.7;
+      color: var(--text-code);
+    }
+
+    .code-block pre {
+      margin: 0;
+      white-space: pre;
+      word-wrap: normal;
+    }
+
+    /* ============================================
+       SYNTAX HIGHLIGHTING
+       ============================================ */
+    .sh-keyword {
+      color: #c678dd;
+    }
+
+    .sh-string {
+      color: #98c379;
+    }
+
+    .sh-number {
+      color: #d19a66;
+    }
+
+    .sh-comment {
+      color: #5c6370;
+      font-style: italic;
+    }
+
+    .sh-function {
+      color: #61afef;
+    }
+
+    .sh-class {
+      color: #e5c07b;
+    }
+
+    .sh-bool {
+      color: #d19a66;
+    }
+
+    .sh-null {
+      color: #d19a66;
+    }
+
+    .sh-operator {
+      color: #56b6c2;
+    }
+
+    .sh-property {
+      color: #e06c75;
+    }
+
+    .sh-punctuation {
+      color: #abb2bf;
+    }
+
+    [data-theme="dark"] .sh-keyword {
+      color: #c678dd;
+    }
+
+    [data-theme="dark"] .sh-string {
+      color: #98c379;
+    }
+
+    [data-theme="dark"] .sh-number {
+      color: #d19a66;
+    }
+
+    [data-theme="dark"] .sh-comment {
+      color: #5c6370;
+    }
+
+    [data-theme="dark"] .sh-function {
+      color: #61afef;
+    }
+
+    [data-theme="dark"] .sh-class {
+      color: #e5c07b;
+    }
+
+    [data-theme="dark"] .sh-bool {
+      color: #d19a66;
+    }
+
+    [data-theme="dark"] .sh-null {
+      color: #d19a66;
+    }
+
+    [data-theme="dark"] .sh-operator {
+      color: #56b6c2;
+    }
+
+    [data-theme="dark"] .sh-property {
+      color: #e06c75;
+    }
+
+    [data-theme="dark"] .sh-punctuation {
+      color: #abb2bf;
+    }
+
+    /* Light theme syntax colors */
+    [data-theme="light"] .sh-keyword {
+      color: #a626a4;
+    }
+
+    [data-theme="light"] .sh-string {
+      color: #50a14f;
+    }
+
+    [data-theme="light"] .sh-number {
+      color: #986801;
+    }
+
+    [data-theme="light"] .sh-comment {
+      color: #a0a1a7;
+    }
+
+    [data-theme="light"] .sh-function {
+      color: #4078f2;
+    }
+
+    [data-theme="light"] .sh-class {
+      color: #c18401;
+    }
+
+    [data-theme="light"] .sh-bool {
+      color: #986801;
+    }
+
+    [data-theme="light"] .sh-null {
+      color: #986801;
+    }
+
+    [data-theme="light"] .sh-operator {
+      color: #0184bc;
+    }
+
+    [data-theme="light"] .sh-property {
+      color: #e45649;
+    }
+
+    [data-theme="light"] .sh-punctuation {
+      color: #383a42;
+    }
+
+    /* ============================================
+       INFO BOXES
+       ============================================ */
+    .info-box {
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      margin: 20px 0;
+      font-size: 14px;
+      line-height: 1.6;
+      border-left: 3px solid;
+    }
+
+    .info-box.info {
+      background: var(--bg-active);
+      border-color: var(--accent);
+      color: var(--text-body);
+    }
+
+    .info-box.success {
+      background: var(--bg-success);
+      border-color: var(--success);
+      color: var(--text-body);
+    }
+
+    .info-box.warn {
+      background: var(--bg-warn);
+      border-color: var(--warn);
+      color: var(--text-body);
+    }
+
+    .info-box.error {
+      background: var(--bg-error);
+      border-color: var(--error);
+      color: var(--text-body);
+    }
+
+    .info-box-title {
+      font-weight: 600;
+      color: var(--text-heading);
+      margin-bottom: 4px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .info-box code {
+      background: var(--bg-code);
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-size: 12px;
+      color: var(--text-code);
+      border: 1px solid var(--border-code);
+    }
+
+    /* ============================================
+       RESPONSIVE
+       ============================================ */
+    @media (max-width: 1200px) {
+      :root {
+        --code-width: 360px;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .code-panel {
+        display: none;
+      }
+
+      .main {
+        margin-right: 0;
+        max-width: none;
+      }
+
+      .mobile-code {
+        display: block !important;
+        margin: 20px 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      :root {
+        --nav-width: 260px;
+      }
+
+      .menu-toggle {
+        display: flex;
+      }
+
+      .sidebar {
+        transform: translateX(-100%);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main {
+        margin-left: 0;
+        padding: 24px 20px 60px;
+      }
+
+      .section-title {
+        font-size: 24px;
+      }
+
+      .subsection-title {
+        font-size: 18px;
+      }
+
+      .overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 99;
+      }
+
+      .overlay.show {
+        display: block;
+      }
+    }
+
+    /* ============================================
+       MOBILE CODE BLOCKS (visible when right panel hidden)
+       ============================================ */
+    .mobile-code {
+      display: none;
+    }
+
+    /* ============================================
+       MISC UTILITIES
+       ============================================ */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border-default);
+      margin: 32px 0;
+    }
+
+    .inline-code {
+      background: var(--bg-code);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 13px;
+      color: var(--text-code);
+      border: 1px solid var(--border-code);
+      font-family: var(--font-mono);
+    }
+
+    ul.list {
+      margin: 12px 0;
+      padding-left: 22px;
+    }
+
+    ul.list li {
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Smooth scroll offset fix */
+    [id] {
+      scroll-margin-top: calc(var(--header-height) + 20px);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Overlay for mobile sidebar -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <div class="logo">
+        <div class="logo-icon">AI</div>
+        <span>API Docs</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="version-badge">v2.1.0</span>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <span id="themeIcon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+        </span>
+        <span id="themeLabel">Light</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Layout -->
+  <div class="layout">
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+
+      <div class="nav-section">
+        <button class="nav-section-toggle" data-section="intro">
+          Introduction
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+        <ul class="nav-links">
+          <li><a href="#introduction" class="nav-link">Overview</a></li>
+          <li><a href="#base-url" class="nav-link">Base URL</a></li>
+          <li><a href="#rate-limits" class="nav-link">Rate Limits</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <button class="nav-section-toggle" data-section="auth">
+          Authentication
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+        <ul class="nav-links">
+          <li><a href="#authentication" class="nav-link">API Keys</a></li>
+          <li><a href="#auth-header" class="nav-link">Authorization Header</a></li>
+          <li><a href="#org-scoping" class="nav-link">Organization Scoping</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <button class="nav-section-toggle" data-section="chat">
+          Chat Completions
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+        <ul class="nav-links">
+          <li><a href="#chat-completions" class="nav-link">Create Completion</a></li>
+          <li><a href="#streaming" class="nav-link">Streaming</a></li>
+          <li><a href="#chat-params" class="nav-link">Request Parameters</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <button class="nav-section-toggle" data-section="models">
+          Models
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+        <ul class="nav-links">
+          <li><a href="#models" class="nav-link">List Models</a></li>
+          <li><a href="#retrieve-model" class="nav-link">Retrieve Model</a></li>
+          <li><a href="#model-capabilities" class="nav-link">Capabilities</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <button class="nav-section-toggle" data-section="errors">
+          Error Handling
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+        <ul class="nav-links">
+          <li><a href="#error-handling" class="nav-link">Error Types</a></li>
+          <li><a href="#error-codes" class="nav-link">Error Codes</a></li>
+          <li><a href="#retries" class="nav-link">Retry Strategy</a></li>
+        </ul>
+      </div>
+
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main" id="main">
+
+      <!-- INTRODUCTION -->
+      <section class="section" id="introduction">
+        <h1 class="section-title">Introduction</h1>
+        <div class="section-desc">
+          <p>Welcome to the <strong>AI API</strong> documentation. This API provides access to state-of-the-art language models for chat completions, text generation, embeddings, and more.</p>
+          <p>The API is organized around REST. Our API has predictable resource-oriented URLs, accepts JSON-encoded request bodies, returns JSON-encoded responses, and uses standard HTTP response codes, authentication, and verbs.</p>
+        </div>
+
+        <div class="info-box info">
+          <div class="info-box-title">Base URL</div>
+          <code>https://api.ai-service.com/v1</code>
+        </div>
+
+        <div class="subsection" id="base-url">
+          <h2 class="subsection-title">Base URL</h2>
+          <p class="subsection-desc">All API requests should be made to the following base URL. HTTPS is required for all API communications.</p>
+          <div class="params-table-wrap">
+            <table class="params-table">
+              <thead>
+                <tr><th>Environment</th><th>Base URL</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="param-name">Production</span></td>
+                  <td><code class="inline-code">https://api.ai-service.com/v1</code></td>
+                  <td class="param-desc">Live environment for production workloads</td>
+                </tr>
+                <tr>
+                  <td><span class="param-name">Sandbox</span></td>
+                  <td><code class="inline-code">https://sandbox.api.ai-service.com/v1</code></td>
+                  <td class="param-desc">Test environment with rate-limited free usage</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="subsection" id="rate-limits">
+          <h2 class="subsection-title">Rate Limits</h2>
+          <p class="subsection-desc">Rate limits are applied at the organization level. Limits vary by tier. Exceeding a rate limit returns a <code class="inline-code">429 Too Many Requests</code> response.</p>
+          <div class="params-table-wrap">
+            <table class="params-table">
+              <thead>
+                <tr><th>Tier</th><th>Requests / min</th><th>Tokens / min</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="param-name">Free</span></td><td>60</td><td>20,000</td></tr>
+                <tr><td><span class="param-name">Pro</span></td><td>3,000</td><td>1,000,000</td></tr>
+                <tr><td><span class="param-name">Enterprise</span></td><td>Custom</td><td>Custom</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <hr class="divider">
+
+      <!-- AUTHENTICATION -->
+      <section class="section" id="authentication">
+        <h1 class="section-title">Authentication</h1>
+        <div class="section-desc">
+          <p>The AI API uses API keys to authenticate requests. You can view and manage your API keys in the <a href="#">Dashboard</a>.</p>
+          <p>Your API keys carry many privileges, so be sure to keep them secure. Do not share your secret API keys in publicly accessible areas such as GitHub, client-side code, and so forth.</p>
+        </div>
+
+        <div class="info-box warn">
+          <div class="info-box-title">Security Warning</div>
+          All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail.
+        </div>
+
+        <div class="subsection" id="auth-header">
+          <h2 class="subsection-title">Authorization Header</h2>
+          <p class="subsection-desc">Authenticate your API requests by including your API key in the <code class="inline-code">Authorization</code> header.</p>
+
+          <div class="endpoint" id="auth-verify">
+            <div class="endpoint-header">
+              <span class="method get">GET</span>
+              <span class="path">/auth/verify</span>
+            </div>
+            <p class="endpoint-desc">Verify that your API key is valid and retrieve basic account information.</p>
+
+            <div class="params-table-wrap">
+              <table class="params-table">
+                <thead>
+                  <tr><th>Header</th><th>Type</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="param-name">Authorization<span class="required">required</span></span></td>
+                    <td class="param-type">string</td>
+                    <td class="param-desc">Bearer token: <code>Bearer &lt;your_api_key&gt;</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="param-name">Content-Type</span></td>
+                    <td class="param-type">string</td>
+                    <td class="param-desc">Must be <code>application/json</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="response-block">
+              <div class="response-label">Response</div>
+              <div class="response-status"><span class="status-dot success"></span> 200 OK</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection" id="org-scoping">
+          <h2 class="subsection-title">Organization Scoping</h2>
+          <p class="subsection-desc">For users belonging to multiple organizations, you can specify which organization to use for an API request by providing the <code class="inline-code">AI-Organization</code> header.</p>
+          <div class="info-box info">
+            <div class="info-box-title">Header</div>
+            <code>AI-Organization: org_abc123def456</code>
+          </div>
+        </div>
+      </section>
+
+      <hr class="divider">
+
+      <!-- CHAT COMPLETIONS -->
+      <section class="section" id="chat-completions">
+        <h1 class="section-title">Chat Completions</h1>
+        <div class="section-desc">
+          <p>Given a list of messages comprising a conversation, the model will return a response. This is the core endpoint for building chat-based applications.</p>
+        </div>
+
+        <div class="endpoint" id="create-completion">
+          <div class="endpoint-header">
+            <span class="method post">POST</span>
+            <span class="path">/chat/completions</span>
+          </div>
+          <p class="endpoint-desc">Creates a model response for the given chat conversation. Supports streaming for real-time token delivery.</p>
+
+          <div class="params-table-wrap">
+            <table class="params-table">
+              <thead>
+                <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="param-name">model<span class="required">required</span></span></td>
+                  <td class="param-type">string</td>
+                  <td class="param-desc">ID of the model to use. Example: <code>gpt-4o</code>, <code>claude-3-opus</code></td>
+                </tr>
+                <tr>
+                  <td><span class="param-name">messages<span class="required">required</span></span></td>
+                  <td class="param-type">array</td>
+                  <td class="param-desc">A list of messages comprising the conversation. Each message has <code>role</code> (system/user/assistant) and <code>content</code>.</td>
+                </tr>
+                <tr>
+                  <td><span class="param-name">temperature</span></td>
+                  <td class="param-type">number</td>
+                  <td class="param-desc">Sampling temperature between <code>0</code> and <code>2</code>. Higher values make output more random. Default: <code>1.0</code></td>
+                </tr>
+                <tr>
+                  <td><span class="param-name">max_tokens</span></td>
+                  <td class="param-type">integer</td>
+                  <td class="param-desc">Maximum number of tokens to generate. Default: model-dependent</td>
+                </tr>
+                <tr>
+                  <td><span class="param-name">top_p</span></td>
+                  <td class="param-type">number</td>
+                  <td class="param-desc">Nucleus sampling parameter. Alternative to temperature. Default: <code>1.0</code></td>
+                </tr>
+                <tr>
+                  <td><span class="param-name">stream</span></td>
+                  <td class="param-type">boolean</td>
+                  <td class="param-desc">If <code>true</code>, partial message deltas will be sent as SSE events. Default: <code>false</code></td>
+                </tr>
+                <tr>
+                  <td><span class="param-name">tools</span></td>
+                  <td class="param-type">array</td>
+                  <td class="param-desc">List of tools the model may call. Each tool requires <code>type</code> and <code>function</code> definition.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Mobile code block -->
+          <div class="mobile-code" data-endpoint="chat-completions"></div>
+
+          <div class="response-block">
+            <div class="response-label">Response</div>
+            <div class="response-status"><span class="status-dot success"></span> 200 OK</div>
+            <p class="endpoint-desc" style="margin-top:8px;">Returns a <a href="#">chat completion object</a> or a stream of completion chunks if <code class="inline-code">stream: true</code>.</p>
+          </div>
+        </div>
+
+        <div class="subsection" id="streaming">
+          <h2 class="subsection-title">Streaming</h2>
+          <p class="subsection-desc">When <code class="inline-code">stream: true</code> is set, the API returns server-sent events (SSE). Each event contains a partial completion chunk. The stream ends with a <code class="inline-code">[DONE]</code> message.</p>
+          <div class="info-box info">
+            <div class="info-box-title">SSE Format</div>
+            Each line starts with <code>data:</code> followed by a JSON object. Empty lines separate events.
+          </div>
+        </div>
+
+        <div class="subsection" id="chat-params">
+          <h2 class="subsection-title">Message Object</h2>
+          <p class="subsection-desc">Messages are the primary input to the chat completions API.</p>
+          <div class="params-table-wrap">
+            <table class="params-table">
+              <thead>
+                <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="param-name">role<span class="required">required</span></span></td>
+                  <td class="param-type">string</td>
+                  <td class="param-desc">One of <code>system</code>, <code>user</code>, <code>assistant</code>, or <code>tool</code></td>
+                </tr>
+                <tr>
+                  <td><span class="param-name">content<span class="required">required</span></span></td>
+                  <td class="param-type">string</td>
+                  <td class="param-desc">The content of the message. Can be text or an array of content parts for multimodal inputs.</td>
+                </tr>
+                <tr>
+                  <td><span class="param-name">name</span></td>
+                  <td class="param-type">string</td>
+                  <td class="param-desc">An optional name for the participant. Provides the model information to differentiate between participants.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <hr class="divider">
+
+      <!-- MODELS -->
+      <section class="section" id="models">
+        <h1 class="section-title">Models</h1>
+        <div class="section-desc">
+          <p>List and describe the various models available in the API. You can refer to the <a href="#">Models documentation</a> to understand what models are available and the differences between them.</p>
+        </div>
+
+        <div class="endpoint" id="list-models">
+          <div class="endpoint-header">
+            <span class="method get">GET</span>
+            <span class="path">/models</span>
+          </div>
+          <p class="endpoint-desc">Lists the currently available models, and provides basic information about each one such as the owner and availability.</p>
+
+          <div class="params-table-wrap">
+            <table class="params-table">
+              <thead>
+                <tr><th>Query</th><th>Type</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="param-name">limit</span></td>
+                  <td class="param-type">integer</td>
+                  <td class="param-desc">Number of models to retrieve (1-100). Default: <code>20</code></td>
+                </tr>
+                <tr>
+                  <td><span class="param-name">after</span></td>
+                  <td class="param-type">string</td>
+                  <td class="param-desc">Cursor for pagination. Use the ID of the last item from the previous page.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mobile-code" data-endpoint="list-models"></div>
+
+          <div class="response-block">
+            <div class="response-label">Response</div>
+            <div class="response-status"><span class="status-dot success"></span> 200 OK</div>
+          </div>
+        </div>
+
+        <div class="endpoint" id="retrieve-model">
+          <div class="endpoint-header">
+            <span class="method get">GET</span>
+            <span class="path">/models/&#123;model&#125;</span>
+          </div>
+          <p class="endpoint-desc">Retrieves a model instance, providing basic information about the model such as the owner and permissioning.</p>
+
+          <div class="params-table-wrap">
+            <table class="params-table">
+              <thead>
+                <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="param-name">model<span class="required">required</span></span></td>
+                  <td class="param-type">string</td>
+                  <td class="param-desc">The ID of the model to retrieve. Example: <code>gpt-4o</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mobile-code" data-endpoint="retrieve-model"></div>
+
+          <div class="response-block">
+            <div class="response-label">Response</div>
+            <div class="response-status"><span class="status-dot success"></span> 200 OK</div>
+            <div class="response-status"><span class="status-dot error"></span> 404 Not Found — Model does not exist</div>
+          </div>
+        </div>
+
+        <div class="subsection" id="model-capabilities">
+          <h2 class="subsection-title">Model Capabilities</h2>
+          <p class="subsection-desc">Different models support different features. Refer to the table below when selecting a model for your use case.</p>
+          <div class="params-table-wrap">
+            <table class="params-table">
+              <thead>
+                <tr><th>Model</th><th>Context</th><th>Vision</th><th>Tools</th><th>Streaming</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="param-name">gpt-4o</span></td>
+                  <td>128K</td>
+                  <td>Yes</td>
+                  <td>Yes</td>
+                  <td>Yes</td>
+                </tr>
+                <tr>
+                  <td><span class="param-name">gpt-4o-mini</span></td>
+                  <td>128K</td>
+                  <td>Yes</td>
+                  <td>Yes</td>
+                  <td>Yes</td>
+                </tr>
+                <tr>
+                  <td><span class="param-name">claude-3-opus</span></td>
+                  <td>200K</td>
+                  <td>Yes</td>
+                  <td>Yes</td>
+                  <td>Yes</td>
+                </tr>
+                <tr>
+                  <td><span class="param-name">claude-3-sonnet</span></td>
+                  <td>200K</td>
+                  <td>Yes</td>
+                  <td>Yes</td>
+                  <td>Yes</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <hr class="divider">
+
+      <!-- ERROR HANDLING -->
+      <section class="section" id="error-handling">
+        <h1 class="section-title">Error Handling</h1>
+        <div class="section-desc">
+          <p>The API uses conventional HTTP response codes to indicate the success or failure of an API request. Codes in the <code class="inline-code">2xx</code> range indicate success, codes in the <code class="inline-code">4xx</code> range indicate an error that failed given the information provided, and codes in the <code class="inline-code">5xx</code> range indicate an error with the API servers.</p>
+        </div>
+
+        <div class="subsection" id="error-types">
+          <h2 class="subsection-title">Error Response Format</h2>
+          <p class="subsection-desc">All errors follow a consistent JSON structure.</p>
+          <div class="info-box error">
+            <div class="info-box-title">Error Object</div>
+            <code>{ "error": { "type": "invalid_request", "message": "...", "code": "invalid_api_key" } }</code>
+          </div>
+        </div>
+
+        <div class="subsection" id="error-codes">
+          <h2 class="subsection-title">Error Codes</h2>
+          <div class="params-table-wrap">
+            <table class="params-table">
+              <thead>
+                <tr><th>Code</th><th>HTTP</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="param-name">invalid_api_key</span></td>
+                  <td>401</td>
+                  <td class="param-desc">The provided API key is invalid or revoked.</td>
+                </tr>
+                <tr>
+                  <td><span class="param-name">insufficient_quota</span></td>
+                  <td>429</td>
+                  <td class="param-desc">You have exceeded your rate limit or quota. Check your plan.</td>
+                </tr>
+                <tr>
+                  <td><span class="param-name">invalid_request</span></td>
+                  <td>400</td>
+                  <td class="param-desc">The request body is malformed or missing required fields.</td>
+                </tr>
+                <tr>
+                  <td><span class="param-name">model_not_found</span></td>
+                  <td>404</td>
+                  <td class="param-desc">The requested model does not exist or you do not have access.</td>
+                </tr>
+                <tr>
+                  <td><span class="param-name">server_error</span></td>
+                  <td>500</td>
+                  <td class="param-desc">An unexpected error occurred on our servers. Retry with backoff.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="subsection" id="retries">
+          <h2 class="subsection-title">Retry Strategy</h2>
+          <p class="subsection-desc">For <code class="inline-code">5xx</code> errors and <code class="inline-code">429</code> rate limit responses, implement an exponential backoff retry strategy.</p>
+          <ul class="list">
+            <li>Retry immediately on <code class="inline-code">429</code> if <code class="inline-code">Retry-After</code> header is present</li>
+            <li>Use exponential backoff starting at 1 second, doubling each retry</li>
+            <li>Maximum retry delay: 60 seconds</li>
+            <li>Maximum retry attempts: 5</li>
+          </ul>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Code Panel (Right Sidebar) -->
+    <aside class="code-panel" id="codePanel">
+
+      <!-- Code for Introduction -->
+      <div class="code-block-wrapper" data-code="introduction">
+        <div class="code-block-header">
+          <div class="lang-tabs">
+            <button class="lang-tab active" data-lang="curl">cURL</button>
+          </div>
+          <button class="copy-btn" data-copy="introduction">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            Copy
+          </button>
+        </div>
+        <div class="code-block">
+          <pre><code class="code-content" data-lang="curl">curl https://api.ai-service.com/v1/models \
+  -H "Authorization: Bearer $AI_API_KEY"</code></pre>
+        </div>
+      </div>
+
+      <!-- Code for Authentication -->
+      <div class="code-block-wrapper" data-code="auth-verify">
+        <div class="code-block-header">
+          <div class="lang-tabs">
+            <button class="lang-tab active" data-lang="curl">cURL</button>
+            <button class="lang-tab" data-lang="python">Python</button>
+            <button class="lang-tab" data-lang="js">JavaScript</button>
+          </div>
+          <button class="copy-btn" data-copy="auth-verify">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            Copy
+          </button>
+        </div>
+        <div class="code-block">
+          <pre><code class="code-content" data-lang="curl">curl https://api.ai-service.com/v1/auth/verify \
+  -H "Authorization: Bearer $AI_API_KEY"</code></pre>
+          <pre><code class="code-content hidden" data-lang="python">import requests
+
+response = requests.get(
+    "https://api.ai-service.com/v1/auth/verify",
+    headers={"Authorization": "Bearer " + api_key}
+)
+print(response.json())</code></pre>
+          <pre><code class="code-content hidden" data-lang="js">const res = await fetch(
+  "https://api.ai-service.com/v1/auth/verify",
+  {
+    headers: { Authorization: `Bearer ${apiKey}` }
+  }
+);
+const data = await res.json();
+console.log(data);</code></pre>
+        </div>
+      </div>
+
+      <!-- Code for Chat Completions -->
+      <div class="code-block-wrapper" data-code="chat-completions">
+        <div class="code-block-header">
+          <div class="lang-tabs">
+            <button class="lang-tab active" data-lang="curl">cURL</button>
+            <button class="lang-tab" data-lang="python">Python</button>
+            <button class="lang-tab" data-lang="js">JavaScript</button>
+          </div>
+          <button class="copy-btn" data-copy="chat-completions">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            Copy
+          </button>
+        </div>
+        <div class="code-block">
+          <pre><code class="code-content" data-lang="curl">curl https://api.ai-service.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $AI_API_KEY" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [
+      {"role": "system", "content": "You are a helpful assistant."},
+      {"role": "user", "content": "Hello!"}
+    ],
+    "temperature": 0.7
+  }'</code></pre>
+          <pre><code class="code-content hidden" data-lang="python">from ai import AIClient
+
+client = AIClient(api_key="your_api_key")
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Hello!"}
+    ],
+    temperature=0.7
+)
+
+print(response.choices[0].message.content)</code></pre>
+          <pre><code class="code-content hidden" data-lang="js">const { AIClient } = require("ai-sdk");
+
+const client = new AIClient({ apiKey: "your_api_key" });
+
+const response = await client.chat.completions.create({
+  model: "gpt-4o",
+  messages: [
+    { role: "system", content: "You are a helpful assistant." },
+    { role: "user", content: "Hello!" }
+  ],
+  temperature: 0.7
+});
+
+console.log(response.choices[0].message.content);</code></pre>
+        </div>
+      </div>
+
+      <!-- Code for Chat Completions Response -->
+      <div class="code-block-wrapper" data-code="chat-completions-response">
+        <div class="code-block-header">
+          <div class="lang-tabs">
+            <span style="font-size:12px;color:var(--text-muted);font-family:var(--font-mono);">Response</span>
+          </div>
+          <button class="copy-btn" data-copy="chat-completions-response">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            Copy
+          </button>
+        </div>
+        <div class="code-block">
+          <pre><code class="code-content" data-lang="json">{
+  "id": "chatcmpl-abc123",
+  "object": "chat.completion",
+  "created": 1718888888,
+  "model": "gpt-4o",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Hello! How can I help you today?"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 24,
+    "completion_tokens": 9,
+    "total_tokens": 33
+  }
+}</code></pre>
+        </div>
+      </div>
+
+      <!-- Code for Streaming -->
+      <div class="code-block-wrapper" data-code="streaming">
+        <div class="code-block-header">
+          <div class="lang-tabs">
+            <button class="lang-tab active" data-lang="python">Python</button>
+            <button class="lang-tab" data-lang="js">JavaScript</button>
+          </div>
+          <button class="copy-btn" data-copy="streaming">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            Copy
+          </button>
+        </div>
+        <div class="code-block">
+          <pre><code class="code-content" data-lang="python">stream = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Hi"}],
+    stream=True
+)
+
+for chunk in stream:
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="")</code></pre>
+          <pre><code class="code-content hidden" data-lang="js">const stream = await client.chat.completions.create({
+  model: "gpt-4o",
+  messages: [{ role: "user", content: "Hi" }],
+  stream: true
+});
+
+for await (const chunk of stream) {
+  process.stdout.write(chunk.choices[0]?.delta?.content || "");
+}</code></pre>
+        </div>
+      </div>
+
+      <!-- Code for List Models -->
+      <div class="code-block-wrapper" data-code="list-models">
+        <div class="code-block-header">
+          <div class="lang-tabs">
+            <button class="lang-tab active" data-lang="curl">cURL</button>
+            <button class="lang-tab" data-lang="python">Python</button>
+            <button class="lang-tab" data-lang="js">JavaScript</button>
+          </div>
+          <button class="copy-btn" data-copy="list-models">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            Copy
+          </button>
+        </div>
+        <div class="code-block">
+          <pre><code class="code-content" data-lang="curl">curl https://api.ai-service.com/v1/models \
+  -H "Authorization: Bearer $AI_API_KEY"</code></pre>
+          <pre><code class="code-content hidden" data-lang="python">models = client.models.list()
+for model in models.data:
+    print(model.id)</code></pre>
+          <pre><code class="code-content hidden" data-lang="js">const models = await client.models.list();
+models.data.forEach(m => console.log(m.id));</code></pre>
+        </div>
+      </div>
+
+      <!-- Code for Retrieve Model -->
+      <div class="code-block-wrapper" data-code="retrieve-model">
+        <div class="code-block-header">
+          <div class="lang-tabs">
+            <button class="lang-tab active" data-lang="curl">cURL</button>
+            <button class="lang-tab" data-lang="python">Python</button>
+            <button class="lang-tab" data-lang="js">JavaScript</button>
+          </div>
+          <button class="copy-btn" data-copy="retrieve-model">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            Copy
+          </button>
+        </div>
+        <div class="code-block">
+          <pre><code class="code-content" data-lang="curl">curl https://api.ai-service.com/v1/models/gpt-4o \
+  -H "Authorization: Bearer $AI_API_KEY"</code></pre>
+          <pre><code class="code-content hidden" data-lang="python">model = client.models.retrieve("gpt-4o")
+print(model)</code></pre>
+          <pre><code class="code-content hidden" data-lang="js">const model = await client.models.retrieve("gpt-4o");
+console.log(model);</code></pre>
+        </div>
+      </div>
+
+      <!-- Code for Error Handling -->
+      <div class="code-block-wrapper" data-code="error-handling">
+        <div class="code-block-header">
+          <div class="lang-tabs">
+            <button class="lang-tab active" data-lang="python">Python</button>
+            <button class="lang-tab" data-lang="js">JavaScript</button>
+          </div>
+          <button class="copy-btn" data-copy="error-handling">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            Copy
+          </button>
+        </div>
+        <div class="code-block">
+          <pre><code class="code-content" data-lang="python">from ai import AIClient, AIError
+
+client = AIClient(api_key="your_api_key")
+
+try:
+    response = client.chat.completions.create(...)
+except AIError as e:
+    print(f"Error: {e.code} — {e.message}")
+    if e.code == "rate_limit_exceeded":
+        time.sleep(1)  # retry with backoff</code></pre>
+          <pre><code class="code-content hidden" data-lang="js">const { AIClient, AIError } = require("ai-sdk");
+
+const client = new AIClient({ apiKey });
+
+try {
+  const response = await client.chat.completions.create(...);
+} catch (err) {
+  if (err instanceof AIError) {
+    console.error(`${err.code}: ${err.message}`);
+    if (err.code === "rate_limit_exceeded") {
+      await sleep(1000); // retry with backoff
+    }
+  }
+}</code></pre>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+
+  <script>
+    /* ============================================
+       THEME TOGGLE
+       ============================================ */
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const themeLabel = document.getElementById('themeLabel');
+    const html = document.documentElement;
+
+    const sunIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+    const moonIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+
+    function updateThemeUI() {
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      themeIcon.innerHTML = isDark ? sunIcon : moonIcon;
+      themeLabel.textContent = isDark ? 'Light' : 'Dark';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const current = html.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      updateThemeUI();
+      localStorage.setItem('docs-theme', next);
+    });
+
+    // Restore saved theme
+    const saved = localStorage.getItem('docs-theme');
+    if (saved) {
+      html.setAttribute('data-theme', saved);
+    }
+    updateThemeUI();
+
+    /* ============================================
+       SIDEBAR TOGGLE (Mobile)
+       ============================================ */
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    function openSidebar() {
+      sidebar.classList.add('open');
+      overlay.classList.add('show');
+    }
+
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+    }
+
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+    });
+
+    overlay.addEventListener('click', closeSidebar);
+
+    // Close sidebar when clicking a nav link on mobile
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) closeSidebar();
+      });
+    });
+
+    /* ============================================
+       NAV SECTION COLLAPSE
+       ============================================ */
+    document.querySelectorAll('.nav-section-toggle').forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        const section = toggle.closest('.nav-section');
+        section.classList.toggle('collapsed');
+      });
+    });
+
+    /* ============================================
+       ACTIVE NAV LINK TRACKING
+       ============================================ */
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.section, .subsection, .endpoint');
+
+    function setActiveLink() {
+      let current = '';
+      const scrollPos = window.scrollY + 100;
+
+      sections.forEach(section => {
+        const top = section.offsetTop;
+        if (scrollPos >= top) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+          link.classList.add('active');
+          // Ensure parent section is expanded
+          const parentSection = link.closest('.nav-section');
+          if (parentSection) parentSection.classList.remove('collapsed');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', setActiveLink);
+    setActiveLink();
+
+    /* ============================================
+       LANGUAGE TABS
+       ============================================ */
+    document.querySelectorAll('.code-block-wrapper').forEach(wrapper => {
+      const tabs = wrapper.querySelectorAll('.lang-tab');
+      const contents = wrapper.querySelectorAll('.code-content');
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const lang = tab.getAttribute('data-lang');
+          if (!lang) return;
+
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+
+          contents.forEach(c => {
+            c.classList.toggle('hidden', c.getAttribute('data-lang') !== lang);
+          });
+
+          // Re-highlight visible code
+          const visible = wrapper.querySelector('.code-content:not(.hidden)');
+          if (visible) highlightElement(visible);
+        });
+      });
+    });
+
+    /* ============================================
+       COPY BUTTON
+       ============================================ */
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const codeKey = btn.getAttribute('data-copy');
+        const wrapper = btn.closest('.code-block-wrapper');
+        const visibleCode = wrapper.querySelector('.code-content:not(.hidden)');
+
+        if (visibleCode) {
+          const text = visibleCode.textContent;
+          try {
+            await navigator.clipboard.writeText(text);
+            const original = btn.innerHTML;
+            btn.classList.add('copied');
+            btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied`;
+            setTimeout(() => {
+              btn.classList.remove('copied');
+              btn.innerHTML = original;
+            }, 2000);
+          } catch (err) {
+            // Fallback
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+          }
+        }
+      });
+    });
+
+    /* ============================================
+       SYNTAX HIGHLIGHTING (Pure JS)
+       ============================================ */
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function highlightJSON(code) {
+      return escapeHtml(code)
+        .replace(/"(\w+)":/g, '<span class="sh-property">"$1"</span>:')
+        .replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, '<span class="sh-string">"$1"</span>')
+        .replace(/\b(true|false)\b/g, '<span class="sh-bool">$1</span>')
+        .replace(/\b(null)\b/g, '<span class="sh-null">$1</span>')
+        .replace(/:\s*(-?\d+(?:\.\d+)?)/g, ': <span class="sh-number">$1</span>');
+    }
+
+    function highlightPython(code) {
+      return escapeHtml(code)
+        .replace(/\b(import|from|as|def|class|return|if|else|elif|for|in|while|try|except|raise|with|pass|print|None|True|False|await|async)\b/g, '<span class="sh-keyword">$1</span>')
+        .replace(/\b(\w+)\(/g, '<span class="sh-function">$1</span>(')
+        .replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, '<span class="sh-string">"$1"</span>')
+        .replace(/'([^'\\]*(?:\\.[^'\\]*)*)'/g, '<span class="sh-string">\'$1\'</span>')
+        .replace(/#(.*$)/gm, '<span class="sh-comment">#$1</span>')
+        .replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="sh-number">$1</span>');
+    }
+
+    function highlightJavaScript(code) {
+      return escapeHtml(code)
+        .replace(/\b(const|let|var|function|return|if|else|for|of|in|while|try|catch|throw|new|await|async|import|from|export|default|class|extends|this|typeof|instanceof)\b/g, '<span class="sh-keyword">$1</span>')
+        .replace(/\b(console|JSON|Math|Date|Promise|Set|Map|Array|Object|String|Number|Boolean)\b/g, '<span class="sh-class">$1</span>')
+        .replace(/\b(\w+)\(/g, '<span class="sh-function">$1</span>(')
+        .replace(/`([^`]*(?:\\.[^`]*)*)`/g, '<span class="sh-string">`$1`</span>')
+        .replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, '<span class="sh-string">"$1"</span>')
+        .replace(/'([^'\\]*(?:\\.[^'\\]*)*)'/g, '<span class="sh-string">\'$1\'</span>')
+        .replace(/\/\/(.+)/g, '<span class="sh-comment">//$1</span>')
+        .replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="sh-number">$1</span>')
+        .replace(/([{}[\](),:;])/g, '<span class="sh-punctuation">$1</span>');
+    }
+
+    function highlightBash(code) {
+      return escapeHtml(code)
+        .replace(/\b(curl|echo|export|cat|grep|sed|awk|mkdir|cd|ls|rm|cp|mv|chmod|sudo|apt|yum|brew|npm|node|python|pip)\b/g, '<span class="sh-keyword">$1</span>')
+        .replace(/(-[A-Za-z-]+)/g, '<span class="sh-property">$1</span>')
+        .replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, '<span class="sh-string">"$1"</span>')
+        .replace(/'([^'\\]*(?:\\.[^'\\]*)*)'/g, '<span class="sh-string">\'$1\'</span>')
+        .replace(/#(.*$)/gm, '<span class="sh-comment">#$1</span>')
+        .replace(/\$\w+/g, '<span class="sh-bool">$&</span>');
+    }
+
+    function highlightElement(el) {
+      const lang = el.getAttribute('data-lang');
+      const raw = el.textContent;
+      let html;
+
+      switch (lang) {
+        case 'json':
+          html = highlightJSON(raw);
+          break;
+        case 'python':
+          html = highlightPython(raw);
+          break;
+        case 'js':
+          html = highlightJavaScript(raw);
+          break;
+        case 'curl':
+          html = highlightBash(raw);
+          break;
+        default:
+          html = escapeHtml(raw);
+      }
+
+      el.innerHTML = html;
+    }
+
+    // Highlight all code blocks
+    document.querySelectorAll('.code-content').forEach(highlightElement);
+
+    /* ============================================
+       MOBILE CODE BLOCKS
+       ============================================ */
+    // For mobile view, clone code blocks into the main content
+    function setupMobileCode() {
+      const isMobile = window.innerWidth <= 1024;
+      document.querySelectorAll('.mobile-code').forEach(placeholder => {
+        const endpoint = placeholder.getAttribute('data-endpoint');
+        // Find matching code block
+        const codeWrapper = document.querySelector(`.code-block-wrapper[data-code="${endpoint}"]`);
+        if (codeWrapper && isMobile) {
+          // Clone the entire wrapper
+          const clone = codeWrapper.cloneNode(true);
+          clone.removeAttribute('id');
+          placeholder.innerHTML = '';
+          placeholder.appendChild(clone);
+          // Re-attach tab handlers
+          clone.querySelectorAll('.lang-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+              const lang = tab.getAttribute('data-lang');
+              if (!lang) return;
+              clone.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
+              tab.classList.add('active');
+              clone.querySelectorAll('.code-content').forEach(c => {
+                c.classList.toggle('hidden', c.getAttribute('data-lang') !== lang);
+              });
+              const visible = clone.querySelector('.code-content:not(.hidden)');
+              if (visible) highlightElement(visible);
+            });
+          });
+          // Re-attach copy handler
+          const copyBtn = clone.querySelector('.copy-btn');
+          if (copyBtn) {
+            copyBtn.addEventListener('click', async () => {
+              const visibleCode = clone.querySelector('.code-content:not(.hidden)');
+              if (visibleCode) {
+                try {
+                  await navigator.clipboard.writeText(visibleCode.textContent);
+                  const orig = copyBtn.innerHTML;
+                  copyBtn.classList.add('copied');
+                  copyBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied`;
+                  setTimeout(() => { copyBtn.classList.remove('copied'); copyBtn.innerHTML = orig; }, 2000);
+                } catch (e) {}
+              }
+            });
+          }
+          // Highlight visible code in clone
+          clone.querySelectorAll('.code-content:not(.hidden)').forEach(highlightElement);
+        }
+      });
+    }
+
+    setupMobileCode();
+    window.addEventListener('resize', setupMobileCode);
+
+    /* ============================================
+       SYNC CODE PANEL WITH SCROLL
+       ============================================ */
+    const codePanel = document.getElementById('codePanel');
+    const codeWrappers = document.querySelectorAll('.code-block-wrapper');
+
+    function syncCodePanel() {
+      if (window.innerWidth <= 1024) return;
+
+      let activeSection = null;
+      const scrollPos = window.scrollY + 120;
+
+      sections.forEach(section => {
+        const top = section.offsetTop;
+        if (scrollPos >= top) {
+          activeSection = section.getAttribute('id');
+        }
+      });
+
+      if (!activeSection) return;
+
+      // Map section to code block
+      const codeMap = {
+        'introduction': 'introduction',
+        'base-url': 'introduction',
+        'rate-limits': 'introduction',
+        'authentication': 'auth-verify',
+        'auth-header': 'auth-verify',
+        'org-scoping': 'auth-verify',
+        'chat-completions': 'chat-completions',
+        'create-completion': 'chat-completions',
+        'streaming': 'streaming',
+        'chat-params': 'chat-completions-response',
+        'models': 'list-models',
+        'list-models': 'list-models',
+        'retrieve-model': 'retrieve-model',
+        'model-capabilities': 'list-models',
+        'error-handling': 'error-handling',
+        'error-types': 'error-handling',
+        'error-codes': 'error-handling',
+        'retries': 'error-handling'
+      };
+
+      const targetCode = codeMap[activeSection];
+      if (!targetCode) return;
+
+      const targetWrapper = document.querySelector(`.code-block-wrapper[data-code="${targetCode}"]`);
+      if (targetWrapper) {
+        targetWrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    // Debounced scroll sync
+    let syncTimeout;
+    window.addEventListener('scroll', () => {
+      clearTimeout(syncTimeout);
+      syncTimeout = setTimeout(syncCodePanel, 300);
+    });
+  </script>
+
+</body>
+</html>
