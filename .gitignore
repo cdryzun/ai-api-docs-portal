@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor artifacts
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.sublime-*
+
+# WorkBuddy internal
+.workbuddy/
+
+# Node (if ever used for tooling)
+node_modules/
+
+# Build output (not applicable yet)
+dist/
+.cache/
